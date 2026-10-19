@@ -1,0 +1,9 @@
+import Link from 'next/link'
+import { ArrowLeft, BriefcaseBusiness, Headphones, ShieldCheck } from 'lucide-react'
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
+
+export default async function ProfessionalDashboard() {
+  const session = await auth.api.getSession({ headers: await headers() })
+  return <main className="min-h-screen bg-[#fbfcfa] px-5 py-10 text-[#153443]"><div className="mx-auto max-w-5xl"><Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-[#60757b]"><ArrowLeft data-icon="inline-start" /> HunarLink home</Link><section className="mt-8 rounded-3xl bg-[#153443] p-8 text-white md:p-12"><p className="text-sm font-bold uppercase tracking-[.18em] text-[#f5b841]">Professional operations</p><h1 className="mt-3 text-4xl font-bold tracking-[-.04em]">Welcome{session?.user?.name ? `, ${session.user.name}` : ''}.</h1><p className="mt-4 max-w-2xl leading-7 text-white/70">HunarLink sends managed service assignments to verified professionals. Your customer relationship and pricing are managed by HunarLink.</p></section><div className="mt-6 grid gap-4 md:grid-cols-3"><div className="rounded-2xl border border-[#e3ece7] bg-white p-6"><BriefcaseBusiness className="text-[#c47b13]" /><h2 className="mt-5 font-bold">Assigned services</h2><p className="mt-2 text-sm text-[#60757b]">Assignments will appear here after staff review.</p></div><div className="rounded-2xl border border-[#e3ece7] bg-white p-6"><ShieldCheck className="text-[#c47b13]" /><h2 className="mt-5 font-bold">Verification</h2><p className="mt-2 text-sm text-[#60757b]">Your profile must be approved before receiving work.</p></div><Link href="/support" className="rounded-2xl border border-[#e3ece7] bg-white p-6"><Headphones className="text-[#c47b13]" /><h2 className="mt-5 font-bold">Contact HunarLink</h2><p className="mt-2 text-sm text-[#60757b]">Need a change or have a question?</p></Link></div></div></main>
+}
