@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { user } from '@/lib/db/schema'
+import { initialLocations, serviceLocation } from '@/lib/db/location-schema'
 
 export async function POST() {
   const email = (process.env.ADMIN_EMAIL_2 ?? process.env.ADMIN_EMAIL)?.trim().toLowerCase()
@@ -16,5 +17,12 @@ export async function POST() {
   const result = await auth.api.signUpEmail({ body: { email, password, name } })
   if (!result.user?.id) return NextResponse.json({ error: 'Admin bootstrap failed.' }, { status: 500 })
   await db.update(user).set({ role: 'ADMIN', status: 'ACTIVE', emailVerified: true }).where(eq(user.id, result.user.id))
+  
+  // Seed initial locations
+  const existingLocations = await db.select({ id: serviceLocation.id }).from(serviceLocation).limit(1)
+  if (!existingLocations[0]) {
+    await db.insert(serviceLocation).values(initialLocations as any)
+  }
+  
   return NextResponse.json({ ok: true })
 }
