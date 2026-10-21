@@ -1,15 +1,130 @@
-'use client'
+"use client";
 
-import { FormEvent, useEffect, useState, useTransition } from 'react'
-import { createLocation, getLocations, toggleLocation, type LocationRows } from '@/app/actions/locations'
+import { FormEvent, useEffect, useState, useTransition } from "react";
+import {
+  createLocation,
+  getLocations,
+  toggleLocation,
+  type LocationRows,
+} from "@/app/actions/locations";
+import { Dropdown } from "@/components/commen/dropdown";
 
 export default function AdminLocationsPage() {
-  const [rows, setRows] = useState<NonNullable<LocationRows>>([])
-  const [form, setForm] = useState({ name: '', region: 'Gilgit', description: '' })
-  const [message, setMessage] = useState('')
-  const [pending, startTransition] = useTransition()
-  const load = () => startTransition(async () => setRows(await getLocations()))
-  useEffect(load, [])
-  const submit = (event: FormEvent) => { event.preventDefault(); startTransition(async () => { const result = await createLocation(form); setMessage(result.ok ? 'Location added.' : result.message); if (result.ok) { setForm({ name: '', region: 'Gilgit', description: '' }); load() } }) }
-  return <section className="space-y-6"><div><p className="text-xs font-black uppercase tracking-[.2em] text-[#c47b13]">Coverage controls</p><h2 className="mt-2 text-3xl font-black">Locations</h2><p className="mt-2 text-[#60757b]">Activate service areas without changing application code.</p></div><form onSubmit={submit} className="grid gap-3 rounded-2xl border border-[#dbe7e0] bg-white p-5 md:grid-cols-[1fr_1fr_1.4fr_auto]"><input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Area name" className="rounded-xl border p-3" /><select value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })} className="rounded-xl border p-3"><option>Gilgit</option><option>Hunza</option><option>Other Gilgit-Baltistan</option></select><input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Description" className="rounded-xl border p-3" /><button disabled={pending} className="rounded-xl bg-[#153443] px-5 py-3 font-bold text-white">Add location</button></form>{message && <p className="text-sm font-bold text-[#2f765b]">{message}</p>}<div className="overflow-hidden rounded-2xl border border-[#dbe7e0] bg-white"><div className="grid grid-cols-4 gap-3 border-b bg-[#f5f8f6] p-4 text-xs font-black uppercase tracking-wide"><span>Location</span><span>Region</span><span>Status</span><span>Actions</span></div>{rows.map((row) => <div key={row.id} className="grid grid-cols-4 items-center gap-3 border-b p-4 text-sm"><div><p className="font-bold">{row.name}</p><p className="text-xs text-[#60757b]">{row.description || 'Service area'}</p></div><span>{row.region}</span><span>{row.active && row.serviceAvailable ? 'Supported' : row.active ? 'Paused' : 'Inactive'}</span><div className="flex flex-wrap gap-2"><button onClick={() => startTransition(async () => { await toggleLocation(row.id, 'active'); load() })} className="rounded-lg border px-2 py-1 text-xs font-bold">{row.active ? 'Deactivate' : 'Activate'}</button><button onClick={() => startTransition(async () => { await toggleLocation(row.id, 'serviceAvailable'); load() })} className="rounded-lg border px-2 py-1 text-xs font-bold">{row.serviceAvailable ? 'Pause services' : 'Enable services'}</button></div></div>)}</div></section>
+  const [rows, setRows] = useState<NonNullable<LocationRows>>([]);
+  const [form, setForm] = useState({
+    name: "",
+    region: "Gilgit",
+    description: "",
+  });
+  const [message, setMessage] = useState("");
+  const [pending, startTransition] = useTransition();
+  const load = () => startTransition(async () => setRows(await getLocations()));
+  useEffect(load, []);
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    startTransition(async () => {
+      const result = await createLocation(form);
+      setMessage(result.ok ? "Location added." : result.message);
+      if (result.ok) {
+        setForm({ name: "", region: "Gilgit", description: "" });
+        load();
+      }
+    });
+  };
+  return (
+    <section className="space-y-6 p-20">
+      <div>
+        <p className="text-xs font-black uppercase tracking-[.2em] text-[#c47b13]">
+          Coverage controls
+        </p>
+        <h2 className="mt-2 text-3xl font-black">Locations</h2>
+        <p className="mt-2 text-[#60757b]">
+          Activate service areas without changing application code.
+        </p>
+      </div>
+      <form
+        onSubmit={submit}
+        className="grid gap-3 rounded-2xl border border-[#dbe7e0] bg-white p-5 md:grid-cols-[1fr_1fr_1.4fr_auto]"
+      >
+        <input
+          required
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          placeholder="Area name"
+          className="rounded-xl border p-3"
+        />
+        <Dropdown
+          options={["Gilgit", "Hunza", "Other Gilgit-Baltistan"]}
+          value={form.region}
+          onChange={(value) => setForm({ ...form, region: value })}
+        />
+        <input
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          placeholder="Description"
+          className="rounded-xl border p-3"
+        />
+        <button
+          disabled={pending}
+          className="rounded-xl bg-[#153443] px-5 py-3 font-bold text-white"
+        >
+          Add location
+        </button>
+      </form>
+      {message && <p className="text-sm font-bold text-[#2f765b]">{message}</p>}
+      <div className="overflow-hidden rounded-2xl border border-[#dbe7e0] bg-white">
+        <div className="grid grid-cols-4 gap-3 border-b bg-[#f5f8f6] p-4 text-xs font-black uppercase tracking-wide">
+          <span>Location</span>
+          <span>Region</span>
+          <span>Status</span>
+          <span>Actions</span>
+        </div>
+        {rows.map((row) => (
+          <div
+            key={row.id}
+            className="grid grid-cols-4 items-center gap-3 border-b p-4 text-sm"
+          >
+            <div>
+              <p className="font-bold">{row.name}</p>
+              <p className="text-xs text-[#60757b]">
+                {row.description || "Service area"}
+              </p>
+            </div>
+            <span>{row.region}</span>
+            <span>
+              {row.active && row.serviceAvailable
+                ? "Supported"
+                : row.active
+                  ? "Paused"
+                  : "Inactive"}
+            </span>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() =>
+                  startTransition(async () => {
+                    await toggleLocation(row.id, "active");
+                    load();
+                  })
+                }
+                className="rounded-lg border px-2 py-1 text-xs font-bold"
+              >
+                {row.active ? "Deactivate" : "Activate"}
+              </button>
+              <button
+                onClick={() =>
+                  startTransition(async () => {
+                    await toggleLocation(row.id, "serviceAvailable");
+                    load();
+                  })
+                }
+                className="rounded-lg border px-2 py-1 text-xs font-bold"
+              >
+                {row.serviceAvailable ? "Pause services" : "Enable services"}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
 }

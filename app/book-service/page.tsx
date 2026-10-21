@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 import { createServiceRequest } from "@/app/actions/service-requests";
 import { getCustomerLocations } from "@/app/actions/locations";
+import { Dropdown } from "@/components/commen/dropdown";
 
 type Location = Awaited<ReturnType<typeof getCustomerLocations>>[number];
 const services = [
@@ -40,6 +42,7 @@ const slug = (value: string) =>
   value.toLowerCase().replaceAll(" / ", "-").replaceAll(" ", "-");
 
 export default function BookServicePage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [service, setService] = useState("");
   const [locations, setLocations] = useState<Location[]>([]);
@@ -54,6 +57,16 @@ export default function BookServicePage() {
   });
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
+  function checkAuth() {
+    // If no locations are available, user is likely not authenticated
+    if (locations.length === 0) {
+      router.push("/sign-in?next=/book-service");
+      return false;
+    }
+    return true;
+  }
+
   useEffect(() => {
     getCustomerLocations().then(setLocations);
   }, []);
@@ -69,6 +82,7 @@ export default function BookServicePage() {
   };
   const submit = async (event: FormEvent) => {
     event.preventDefault();
+    if (!checkAuth()) return;
     setMessage("");
     const result = await createServiceRequest({
       categorySlug: slug(service),
@@ -189,15 +203,14 @@ export default function BookServicePage() {
                   placeholder="Describe what you need help with"
                   className="min-h-36 rounded-xl border border-[#dfeae3] p-4"
                 />
-                <select
-                  value={form.urgency}
-                  onChange={(e) => update("urgency", e.target.value)}
-                  className="rounded-xl border border-[#dfeae3] p-4"
-                >
-                  <option value="NORMAL">Normal</option>
-                  <option value="URGENT">Urgent</option>
-                  <option value="EMERGENCY">Emergency</option>
-                </select>
+                <label className="grid gap-2 text-[14px] font-[500] ">
+                  Urgency
+                  <Dropdown
+                    options={["Normal", "Urgent", "Emergency"]}
+                    value={form.urgency}
+                    onChange={(value) => update("urgency", value.toUpperCase())}
+                  />
+                </label>
               </div>
             </fieldset>
           )}
@@ -209,19 +222,12 @@ export default function BookServicePage() {
               <div className="mt-7 grid gap-5">
                 <label className="grid gap-2 text-sm font-bold">
                   Service area
-                  <select
-                    required
+                  <Dropdown
+                    options={locations.map(loc => ({ label: `${loc.name} — ${loc.region}`, value: loc.id }))}
                     value={form.locationId}
-                    onChange={(e) => update("locationId", e.target.value)}
-                    className="rounded-xl border border-[#dfeae3] p-4 font-normal"
-                  >
-                    <option value="">Select an active area</option>
-                    {locations.map((location) => (
-                      <option key={location.id} value={location.id}>
-                        {location.name} — {location.region}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => update("locationId", value)}
+                    placeholder="Select an active area"
+                  />
                 </label>
                 <label className="grid gap-2 text-sm font-bold">
                   Complete address

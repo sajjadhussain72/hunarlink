@@ -1,0 +1,18 @@
+{
+  "name": "HunarLink — Find Local Skills. Hire with Confidence.",
+  "short_name": "HunarLink",
+  "description": "Discover trusted local workers and skilled professionals in Gilgit-Baltistan. Book electricians, plumbers, carpenters, and more.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbfcfa",
+  "theme_color": "#153443",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

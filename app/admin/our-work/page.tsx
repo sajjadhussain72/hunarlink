@@ -1,11 +1,207 @@
-import { AdminShell } from '@/components/admin-shell'
-import { ProjectImageUploader } from '@/components/project-editor'
-import { createProject, deleteProject, getAdminProjects, updateProjectStatus } from '@/app/actions/projects'
+import { AdminShell } from "@/components/admin-shell";
+import { ProjectImageUploader } from "@/components/project-editor";
+import {
+  createProject,
+  deleteProject,
+  getAdminProjects,
+  updateProjectStatus,
+} from "@/app/actions/projects";
 
-const categories = ['Plumbing', 'Electrical', 'Carpentry', 'Cleaning', 'Painting', 'Appliance Repair', 'AC / Heating', 'Home Maintenance', 'Commercial Maintenance', 'Other']
-const types = ['Residential', 'Commercial', 'Hotel / Hospitality', 'Office', 'Shop', 'Restaurant', 'Property', 'Other']
+const categories = [
+  "Plumbing",
+  "Electrical",
+  "Carpentry",
+  "Cleaning",
+  "Painting",
+  "Appliance Repair",
+  "AC / Heating",
+  "Home Maintenance",
+  "Commercial Maintenance",
+  "Other",
+];
+const types = [
+  "Residential",
+  "Commercial",
+  "Hotel / Hospitality",
+  "Office",
+  "Shop",
+  "Restaurant",
+  "Property",
+  "Other",
+];
 
 export default async function AdminOurWorkPage() {
-  const projects = await getAdminProjects()
-  return <AdminShell><div className="mx-auto max-w-6xl"><h1 className="text-3xl font-black">Our Work / Completed Projects</h1><p className="mt-2 text-[#60757b]">Document genuine HunarLink work. Public publishing requires approved client permission.</p><div className="mt-3 rounded-xl bg-[#fff7e8] p-3 text-sm text-[#7d5a1b]">Only real completed projects may be added. Never publish private client information without permission.</div><form action={createProject} className="mt-8 grid gap-4 rounded-3xl border border-[#dce8e1] bg-white p-6 md:grid-cols-2"><input name="title" required placeholder="Project title" className="rounded-xl border p-3" /><input name="slug" placeholder="URL slug (optional)" className="rounded-xl border p-3" /><select name="serviceCategory" className="rounded-xl border p-3">{categories.map((item) => <option key={item}>{item}</option>)}</select><select name="projectType" className="rounded-xl border p-3">{types.map((item) => <option key={item}>{item}</option>)}</select><select name="clientType" className="rounded-xl border p-3"><option>Individual</option><option>Company</option><option>Hotel</option><option>Restaurant</option><option>Office</option><option>Shop</option><option>Organization</option><option>Other</option></select><input name="clientName" placeholder="Client/company name (internal)" className="rounded-xl border p-3" /><input name="completionDate" type="date" className="rounded-xl border p-3" /><select name="clientPermissionStatus" className="rounded-xl border p-3"><option value="NOT_REQUESTED">Permission not requested</option><option value="REQUESTED">Permission requested</option><option value="APPROVED">Permission approved</option><option value="DECLINED">Permission declined</option></select><textarea name="overview" required placeholder="Project overview" className="min-h-24 rounded-xl border p-3 md:col-span-2" /><textarea name="clientRequirement" placeholder="Client requirement" className="min-h-24 rounded-xl border p-3" /><textarea name="workPerformed" required placeholder="Work performed" className="min-h-24 rounded-xl border p-3" /><textarea name="challenges" placeholder="Challenges (optional)" className="min-h-24 rounded-xl border p-3" /><textarea name="solution" placeholder="Solution" className="min-h-24 rounded-xl border p-3" /><textarea name="result" required placeholder="Actual result" className="min-h-24 rounded-xl border p-3 md:col-span-2" /><label className="flex items-center gap-2 text-sm font-bold"><input type="checkbox" name="displayClientPublicly" /> Client approved public name display</label><button className="rounded-xl bg-[#153443] px-5 py-3 font-bold text-white md:col-span-2">Save draft</button></form><div className="mt-8 space-y-5">{projects.length === 0 ? <div className="rounded-3xl border border-dashed border-[#bfd2c8] p-10 text-center text-[#60757b]">No projects yet. Add a real completed project above.</div> : projects.map((project) => <article key={project.id} className="rounded-3xl border border-[#dce8e1] bg-white p-5"><div className="flex flex-wrap items-start justify-between gap-4"><div><h2 className="text-xl font-bold">{project.title}</h2><p className="mt-1 text-sm text-[#60757b]">{project.serviceCategory} · {project.projectType} · {project.status} · Permission: {project.clientPermissionStatus}</p></div><div className="flex gap-2"><form action={updateProjectStatus}><input type="hidden" name="id" value={project.id} /><input type="hidden" name="clientPermissionStatus" value={project.clientPermissionStatus} /><select name="status" defaultValue={project.status} className="rounded-lg border p-2 text-xs"><option>DRAFT</option><option>INTERNAL_REVIEW</option><option>CLIENT_PERMISSION_PENDING</option><option>READY_TO_PUBLISH</option><option>PUBLISHED</option><option>ARCHIVED</option></select><button className="ml-2 rounded-lg bg-[#2f765b] px-3 py-2 text-xs font-bold text-white">Update</button></form><form action={deleteProject}><input type="hidden" name="id" value={project.id} /><button className="rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-700">Delete</button></form></div></div><p className="mt-4 text-sm text-[#60757b]">{project.overview}</p><div className="mt-4"><ProjectImageUploader projectId={project.id} /></div></article>)}</div></div></AdminShell>
+  const projects = await getAdminProjects();
+  return (
+    <AdminShell>
+      <div className="mx-auto max-w-6xl">
+        <h1 className="text-3xl font-black">Our Work / Completed Projects</h1>
+        <p className="mt-2 text-[#60757b]">
+          Document genuine HunarLink work. Public publishing requires approved
+          client permission.
+        </p>
+        <div className="mt-3 rounded-xl bg-[#fff7e8] p-3 text-sm text-[#7d5a1b]">
+          Only real completed projects may be added. Never publish private
+          client information without permission.
+        </div>
+        <form
+          action={createProject}
+          className="mt-8 grid gap-4 rounded-3xl border border-[#dce8e1] bg-white p-6 md:grid-cols-2"
+        >
+          <input
+            name="title"
+            required
+            placeholder="Project title"
+            className="rounded-xl border p-3"
+          />
+          <input
+            name="slug"
+            placeholder="URL slug (optional)"
+            className="rounded-xl border p-3"
+          />
+          <select name="serviceCategory" className="rounded-xl border p-3">
+            {categories.map((item) => (
+              <option key={item}>{item}</option>
+            ))}
+          </select>
+          <select name="projectType" className="rounded-xl border p-3">
+            {types.map((item) => (
+              <option key={item}>{item}</option>
+            ))}
+          </select>
+          <select name="clientType" className="rounded-xl border p-3">
+            <option>Individual</option>
+            <option>Company</option>
+            <option>Hotel</option>
+            <option>Restaurant</option>
+            <option>Office</option>
+            <option>Shop</option>
+            <option>Organization</option>
+            <option>Other</option>
+          </select>
+          <input
+            name="clientName"
+            placeholder="Client/company name (internal)"
+            className="rounded-xl border p-3"
+          />
+          <input
+            name="completionDate"
+            type="date"
+            className="rounded-xl border p-3"
+          />
+          <select
+            name="clientPermissionStatus"
+            className="rounded-xl border p-3"
+          >
+            <option value="NOT_REQUESTED">Permission not requested</option>
+            <option value="REQUESTED">Permission requested</option>
+            <option value="APPROVED">Permission approved</option>
+            <option value="DECLINED">Permission declined</option>
+          </select>
+          <textarea
+            name="overview"
+            required
+            placeholder="Project overview"
+            className="min-h-24 rounded-xl border p-3 md:col-span-2"
+          />
+          <textarea
+            name="clientRequirement"
+            placeholder="Client requirement"
+            className="min-h-24 rounded-xl border p-3"
+          />
+          <textarea
+            name="workPerformed"
+            required
+            placeholder="Work performed"
+            className="min-h-24 rounded-xl border p-3"
+          />
+          <textarea
+            name="challenges"
+            placeholder="Challenges (optional)"
+            className="min-h-24 rounded-xl border p-3"
+          />
+          <textarea
+            name="solution"
+            placeholder="Solution"
+            className="min-h-24 rounded-xl border p-3"
+          />
+          <textarea
+            name="result"
+            required
+            placeholder="Actual result"
+            className="min-h-24 rounded-xl border p-3 md:col-span-2"
+          />
+          <label className="flex items-center gap-2 text-sm font-bold">
+            <input type="checkbox" name="displayClientPublicly" /> Client
+            approved public name display
+          </label>
+          <button className="rounded-xl bg-[#153443] px-5 py-3 font-bold text-white md:col-span-2">
+            Save draft
+          </button>
+        </form>
+        <div className="mt-8 space-y-5">
+          {projects.length === 0 ? (
+            <div className="rounded-3xl border border-dashed border-[#bfd2c8] p-10 text-center text-[#60757b]">
+              No projects yet. Add a real completed project above.
+            </div>
+          ) : (
+            projects.map((project) => (
+              <article
+                key={project.id}
+                className="rounded-3xl border border-[#dce8e1] bg-white p-5"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <h2 className="text-xl font-bold">{project.title}</h2>
+                    <p className="mt-1 text-sm text-[#60757b]">
+                      {project.serviceCategory} · {project.projectType} ·{" "}
+                      {project.status} · Permission:{" "}
+                      {project.clientPermissionStatus}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <form action={updateProjectStatus}>
+                      <input type="hidden" name="id" value={project.id} />
+                      <input
+                        type="hidden"
+                        name="clientPermissionStatus"
+                        value={project.clientPermissionStatus}
+                      />
+                      <select
+                        name="status"
+                        defaultValue={project.status}
+                        className="rounded-lg border p-2 text-xs"
+                      >
+                        <option>DRAFT</option>
+                        <option>INTERNAL_REVIEW</option>
+                        <option>CLIENT_PERMISSION_PENDING</option>
+                        <option>READY_TO_PUBLISH</option>
+                        <option>PUBLISHED</option>
+                        <option>ARCHIVED</option>
+                      </select>
+                      <button className="ml-2 rounded-lg bg-[#2f765b] px-3 py-2 text-xs font-bold text-white">
+                        Update
+                      </button>
+                    </form>
+                    <form action={deleteProject}>
+                      <input type="hidden" name="id" value={project.id} />
+                      <button className="rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-700">
+                        Delete
+                      </button>
+                    </form>
+                  </div>
+                </div>
+                <p className="mt-4 text-sm text-[#60757b]">
+                  {project.overview}
+                </p>
+                <div className="mt-4">
+                  <ProjectImageUploader projectId={project.id} />
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+      </div>
+    </AdminShell>
+  );
 }
