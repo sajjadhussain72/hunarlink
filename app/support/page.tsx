@@ -5,7 +5,7 @@ import { publicConfig } from "@/lib/public-config";
 
 export default function SupportPage() {
   return (
-    <main className="min-h-screen bg-[#fbfcfa] text-[#153443]">
+    <main className="min-h-screen bg-[#fbfcfa] text-[#153443]" suppressHydrationWarning>
       <div className="mx-auto max-w-3xl px-5 py-10 lg:px-8">
         <Link
           href="/"

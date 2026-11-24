@@ -1,5 +1,3 @@
-"use server";
-
 // Re-export project actions from modularized files
 export {
   getPublishedProjects,
@@ -14,4 +12,3 @@ export {
   updateProjectStatus,
   deleteProject,
 } from "@/lib/actions/projects/update";
-

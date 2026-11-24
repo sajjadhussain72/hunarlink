@@ -3,11 +3,26 @@
 import { useEffect, useState, useTransition } from 'react'
 import { MessageCircle, Send } from 'lucide-react'
 import { deleteChatMessage, getAdminConversations, sendAdminMessage, sendAdminVoiceMessage, type AdminConversations } from '@/app/actions/chat'
+import { Avatar } from '@/components/commen'
 import { VoiceMessagePlayer } from '@/components/voice-message-player'
 import { VoiceMessageRecorder } from '@/components/voice-message-recorder'
 
 type Item = Extract<AdminConversations, { ok: true }>['items'][number]
-type ChatMessage = Item['messages'][number]
+type ChatMessage = {
+  message: {
+    id: string;
+    body: string;
+    senderRole: string;
+    messageType?: string;
+    audioPath?: string | null;
+    durationSeconds?: number | null;
+    createdAt: Date | string;
+  };
+  senderName?: string | null;
+  senderEmail?: string | null;
+  senderImage?: string | null;
+  senderRole?: string | null;
+}
 
 export function AdminSupportChat() {
   const [items, setItems] = useState<Item[]>([])
@@ -49,7 +64,7 @@ export function AdminSupportChat() {
     startTransition(async () => {
       const result = await deleteChatMessage(messageId, scope)
       if (!result.ok) { setError(result.message); return }
-      setItems((current) => current.map((item) => ({ ...item, messages: item.messages.filter((message) => message.id !== messageId) })))
+      setItems((current) => current.map((item) => ({ ...item, messages: item.messages.filter((message) => message.message.id !== messageId) })))
     })
   }
 
@@ -75,12 +90,33 @@ export function AdminSupportChat() {
       <div className="grid min-h-[420px] md:grid-cols-[280px_minmax(0,1fr)]">
         <div className="max-h-[420px] overflow-y-auto border-b border-[#e3ece7] bg-[#fbfcfa] p-3 md:border-b-0 md:border-r">
           {items.length === 0 && !error && <p className="p-3 text-sm text-[#60757b]">No customer conversations yet.</p>}
-          {items.map((item) => <button key={item.conversation.id} type="button" onClick={() => setSelectedId(item.conversation.id)} className={`mb-2 w-full rounded-2xl p-3 text-left ${item.conversation.id === selectedId ? 'bg-[#153443] text-white' : 'bg-white text-[#153443]'}`}><p className="font-bold">{item.customerName}</p><p className="truncate text-xs opacity-70">{item.messages.at(-1)?.body ?? 'No messages yet'}</p></button>)}
+          {items.map((item) => <button key={item.conversation.id} type="button" onClick={() => setSelectedId(item.conversation.id)} className={`mb-2 w-full rounded-2xl p-3 text-left ${item.conversation.id === selectedId ? 'bg-[#153443] text-white' : 'bg-white text-[#153443]'}`}><p className="font-bold">{item.customerName}</p><p className="truncate text-xs opacity-70">{item.messages.at(-1)?.message?.body ?? 'No messages yet'}</p></button>)}
         </div>
         <div className="flex min-w-0 flex-col">
           {selected ? <>
             <div className="flex items-center justify-between gap-3 border-b border-[#e3ece7] p-4"><div><p className="font-bold">{selected.customerName}</p><p className="text-xs text-[#60757b]">{selected.customerEmail}</p></div><span className="rounded-full bg-[#eaf5f0] px-3 py-1 text-xs font-bold text-[#2f765b]">Active conversation</span></div>
-            <div className="flex max-h-[420px] flex-1 flex-col gap-3 overflow-y-auto bg-[#fbfcfa] p-5">{selected.messages.map((message: ChatMessage) => <div key={message.id} className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${message.senderRole === 'CUSTOMER' ? 'self-start bg-white text-[#153443]' : 'self-end bg-[#153443] text-white'}`}>{message.messageType === 'AUDIO' && message.audioPath ? <VoiceMessagePlayer src={`/api/chat/audio/file?pathname=${encodeURIComponent(message.audioPath)}`} durationSeconds={message.durationSeconds} compact /> : <p>{message.body}</p>}<div className="mt-1 flex items-center justify-between gap-3"><time className="text-[11px] opacity-60">{new Date(message.createdAt).toLocaleString()}</time><details className="relative"><summary className="list-none cursor-pointer opacity-60 hover:opacity-100" aria-label="Message options">•••</summary><div className="absolute bottom-5 right-0 z-10 w-40 rounded-xl border border-[#dbe7e0] bg-white p-1 text-left text-[#153443] shadow-lg"><button type="button" onClick={() => removeMessage(message.id, 'ONLY_ME')} className="block w-full rounded-lg px-3 py-2 text-xs font-bold hover:bg-[#f5f8f6]">Delete for me</button><button type="button" onClick={() => removeMessage(message.id, 'EVERYONE')} className="block w-full rounded-lg px-3 py-2 text-xs font-bold hover:bg-[#fff1f1] hover:text-[#c84b4b]">Delete for everyone</button></div></details></div></div>)}</div>
+            <div className="flex max-h-[420px] flex-1 flex-col gap-3 overflow-y-auto bg-[#fbfcfa] p-5">{selected.messages.map((message: ChatMessage) => (
+              <div key={message.message.id} className={`flex flex-col gap-1 ${message.message.senderRole === 'CUSTOMER' ? 'items-start' : 'items-end'}`}>
+                <div className="flex items-center gap-2 text-xs text-[#60757b]">
+                  <Avatar name={message.senderName || undefined} image={message.senderImage || undefined} size="sm" />
+                  <span className="font-semibold">{message.senderName || (message.message.senderRole === 'CUSTOMER' ? selected.customerName : 'You (Staff)')}</span>
+                  <span className="rounded-full bg-[#eaf5f0] px-2 py-0.5 text-[10px] font-bold text-[#2f765b]">{message.senderRole || message.message.senderRole}</span>
+                </div>
+                <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${message.message.senderRole === 'CUSTOMER' ? 'bg-white text-[#153443]' : 'bg-[#153443] text-white'}`}>
+                  {message.message.messageType === 'AUDIO' && message.message.audioPath ? <VoiceMessagePlayer src={`/api/chat/audio/file?pathname=${encodeURIComponent(message.message.audioPath)}`} durationSeconds={message.message.durationSeconds} compact /> : <p>{message.message.body}</p>}
+                  <div className="mt-1 flex items-center justify-between gap-3">
+                    <time className="text-[11px] opacity-60">{new Date(message.message.createdAt).toLocaleString()}</time>
+                    <details className="relative">
+                      <summary className="list-none cursor-pointer opacity-60 hover:opacity-100" aria-label="Message options">•••</summary>
+                      <div className="absolute bottom-5 right-0 z-10 w-40 rounded-xl border border-[#dbe7e0] bg-white p-1 text-left text-[#153443] shadow-lg">
+                        <button type="button" onClick={() => removeMessage(message.message.id, 'ONLY_ME')} className="block w-full rounded-lg px-3 py-2 text-xs font-bold hover:bg-[#f5f8f6]">Delete for me</button>
+                        <button type="button" onClick={() => removeMessage(message.message.id, 'EVERYONE')} className="block w-full rounded-lg px-3 py-2 text-xs font-bold hover:bg-[#fff1f1] hover:text-[#c84b4b]">Delete for everyone</button>
+                      </div>
+                    </details>
+                  </div>
+                </div>
+              </div>
+            ))}</div>
             <div className="border-t border-[#e3ece7] p-4"><div className="flex gap-2"><label htmlFor="admin-message" className="sr-only">Reply to client</label><textarea id="admin-message" value={draft} onChange={(event) => setDraft(event.target.value)} rows={2} placeholder="Write a reply to this client…" className="min-w-0 flex-1 resize-none rounded-2xl border border-[#d5e2dc] px-4 py-3 text-sm outline-none focus:border-[#f5b841]" disabled={pending} /><VoiceMessageRecorder onUploaded={addVoice} disabled={pending} /><button type="button" onClick={send} disabled={pending || !draft.trim()} className="self-end rounded-2xl bg-[#f5b841] p-3 text-[#153443] disabled:opacity-50" aria-label="Send reply"><Send /></button></div>{error && <p className="mt-2 text-sm text-[#b33a3a]">{error}</p>}</div>
           </> : <div className="m-auto p-8 text-center text-sm text-[#60757b]">{error || 'Select a client conversation to reply.'}</div>}
         </div>

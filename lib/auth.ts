@@ -1,5 +1,5 @@
 import { betterAuth } from 'better-auth'
-import { Pool } from 'pg'
+import { pool } from './db'
 
 const origin = (value?: string) => value ? (value.startsWith('http') ? value : `https://${value}`) : undefined
 const trustedOrigins = [
@@ -9,11 +9,10 @@ const trustedOrigins = [
 ].filter(Boolean) as string[]
 
 export const auth = betterAuth({
-  database: new Pool({ connectionString: process.env.DATABASE_URL }),
-  secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: origin(process.env.BETTER_AUTH_URL) ?? origin(process.env.VERCEL_PROJECT_PRODUCTION_URL) ?? origin(process.env.VERCEL_URL) ?? origin(process.env.V0_RUNTIME_URL),
+  database: pool,
+  secret: process.env.BETTER_AUTH_SECRET || 'dev-secret-change-in-production',
+  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
   trustedOrigins,
   emailAndPassword: { enabled: true },
   user: { additionalFields: { phone: { type: 'string', required: false }, role: { type: 'string', required: false, defaultValue: 'CUSTOMER' }, status: { type: 'string', required: false, defaultValue: 'ACTIVE' } } },
-  advanced: process.env.NODE_ENV === 'development' ? { defaultCookieAttributes: { sameSite: 'none', secure: true } } : undefined,
 })

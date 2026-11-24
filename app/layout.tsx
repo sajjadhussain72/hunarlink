@@ -6,6 +6,8 @@ import './globals.css'
 const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
+  variable: '--font-inter',
+  preload: true,
 })
 
 export const metadata: Metadata = {
@@ -49,13 +51,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={inter.variable}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
-      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
-        {children}
+      <body className="font-sans antialiased" suppressHydrationWarning>
+        <div suppressHydrationWarning>
+          {children}
+        </div>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
     }
   }
   return (
-    <main className="min-h-screen bg-[#f7faf6] px-6 py-16">
+    <main className="min-h-screen bg-[#f7faf6] px-6 py-16" suppressHydrationWarning>
       <div className="mx-auto max-w-md rounded-3xl bg-white p-8 shadow-sm">
         <p className="text-sm font-bold text-[#2f765b]">HunarLink Admin</p>
         <h1 className="mt-3 text-3xl font-black text-[#153443]">

@@ -1,37 +1,26 @@
 import Link from "next/link";
-import { ArrowLeft, MessageCircle } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { AdminSupportChat } from "@/components/admin-support-chat";
-import { AdminShell } from "@/components/admin-shell";
 
 export default function AdminConversationsPage() {
   return (
-    <AdminShell>
-      <div className="mx-auto max-w-6xl">
-        <Link
-          href="/admin/service-requests"
-          className="inline-flex items-center gap-2 text-sm font-bold text-[#60757b]"
-        >
-          <ArrowLeft data-icon="inline-start" /> Operations center
-        </Link>
-        <div className="mt-8 flex items-center gap-4">
-          <div className="flex size-12 items-center justify-center rounded-xl bg-[#f5b841]">
-            <MessageCircle />
-          </div>
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[.18em] text-[#c47b13]">
-              HunarLink inbox
-            </p>
-            <h1 className="text-4xl font-bold tracking-[-.04em]">
-              Client chat
-            </h1>
-          </div>
-        </div>
-        <p className="mt-4 max-w-2xl leading-7 text-[#60757b]">
-          Customers contact HunarLink here. Staff and admins reply as the
-          company; personal professional contact details are never exposed.
+    <div className="mx-auto max-w-6xl" suppressHydrationWarning>
+      <Link
+        href="/admin/service-requests"
+        className="inline-flex items-center gap-2 text-sm font-bold text-[#60757b]"
+      >
+        <ArrowLeft data-icon="inline-start" /> Back to service requests
+      </Link>
+      <div className="mt-8">
+        <p className="text-sm font-bold text-[#c47b13]">Client inbox</p>
+        <h2 className="mt-2 text-4xl font-black">Conversations</h2>
+        <p className="mt-3 max-w-2xl text-[#60757b]">
+          View and respond to customer messages across all service requests.
         </p>
+      </div>
+      <div className="mt-8 rounded-2xl border border-[#e3ece7] bg-white p-6">
         <AdminSupportChat />
       </div>
-    </AdminShell>
+    </div>
   );
 }

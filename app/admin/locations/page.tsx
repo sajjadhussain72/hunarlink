@@ -32,7 +32,7 @@ export default function AdminLocationsPage() {
     });
   };
   return (
-    <section className="space-y-6 p-20">
+    <section className="space-y-6 p-20" suppressHydrationWarning>
       <div>
         <p className="text-xs font-black uppercase tracking-[.2em] text-[#c47b13]">
           Coverage controls

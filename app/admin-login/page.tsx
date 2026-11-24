@@ -8,7 +8,10 @@ export const metadata = {
 
 export default function AdminLoginPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#f5f8f6] px-5 py-12">
+    <main
+      className="flex min-h-screen items-center justify-center bg-[#f5f8f6] px-5 py-12"
+      suppressHydrationWarning
+    >
       <section className="w-full max-w-md rounded-3xl border border-[#dbe7e0] bg-white p-8 shadow-sm">
         <Link href="/" className="text-sm font-black text-[#c47b13]">
           HunarLink

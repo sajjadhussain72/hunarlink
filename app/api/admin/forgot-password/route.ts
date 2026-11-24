@@ -45,9 +45,6 @@ export async function POST(request: Request) {
     const apiKey = process.env.RESEND_API_KEY?.trim();
     const sender = process.env.RESEND_FROM_EMAIL?.trim();
     if (!apiKey || !sender) {
-      console.error(
-        "[v0] Password reset email is not configured: RESEND_API_KEY and RESEND_FROM_EMAIL are required",
-      );
       return NextResponse.json(
         {
           error:
@@ -75,11 +72,6 @@ export async function POST(request: Request) {
         },
       );
       if (!response.ok) {
-        console.error(
-          "[v0] Password reset email failed:",
-          response.status,
-          await response.text(),
-        );
         return NextResponse.json(
           {
             error:
@@ -89,9 +81,6 @@ export async function POST(request: Request) {
         );
       }
     } else {
-      console.error(
-        "[v0] Password reset email is not configured: RESEND_API_KEY is missing",
-      );
       return NextResponse.json(
         {
           error:
@@ -101,11 +90,7 @@ export async function POST(request: Request) {
       );
     }
     return NextResponse.json(generic);
-  } catch (error) {
-    console.error(
-      "[v0] Password recovery request failed:",
-      error instanceof Error ? error.message : "unknown error",
-    );
+  } catch {
     return NextResponse.json(
       { error: "Unable to process password recovery right now." },
       { status: 500 },

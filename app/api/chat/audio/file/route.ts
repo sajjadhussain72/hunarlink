@@ -11,10 +11,19 @@ export async function GET(request: Request) {
   if (!session?.user) return NextResponse.json({ error: 'Sign in required.' }, { status: 401 })
   const pathname = new URL(request.url).searchParams.get('pathname')
   if (!pathname || !pathname.startsWith('chat-audio/')) return NextResponse.json({ error: 'Audio not found.' }, { status: 404 })
-  const [message] = await db.select({ customerId: managedConversation.customerId }).from(managedMessage).innerJoin(managedConversation, eq(managedConversation.id, managedMessage.conversationId)).where(eq(managedMessage.audioPath, pathname)).limit(1)
+  
+  // Run auth check and blob fetch in parallel
+  const [message, result] = await Promise.all([
+    db.select({ customerId: managedConversation.customerId })
+      .from(managedMessage)
+      .innerJoin(managedConversation, eq(managedConversation.id, managedMessage.conversationId))
+      .where(eq(managedMessage.audioPath, pathname))
+      .limit(1),
+    get(pathname, { access: 'private' })
+  ])
+  
   const isStaff = ['STAFF', 'ADMIN', 'SUPER_ADMIN'].includes(session.user.role ?? '')
-  if (!message || (!isStaff && message.customerId !== session.user.id)) return NextResponse.json({ error: 'Audio not found.' }, { status: 404 })
-  const result = await get(pathname, { access: 'private' })
+  if (!message || (!isStaff && message[0]?.customerId !== session.user.id)) return NextResponse.json({ error: 'Audio not found.' }, { status: 404 })
   if (!result) return NextResponse.json({ error: 'Audio not found.' }, { status: 404 })
-  return new NextResponse(result.stream, { headers: { 'Content-Type': result.blob.contentType ?? 'application/octet-stream', 'Cache-Control': 'private, no-cache', ETag: result.blob.etag } })
+  return new NextResponse(result.stream, { headers: { 'Content-Type': result.blob.contentType ?? 'application/octet-stream', 'Cache-Control': 'private, max-age=3600', ETag: result.blob.etag } })
 }

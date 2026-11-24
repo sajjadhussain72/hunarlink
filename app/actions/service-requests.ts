@@ -4,17 +4,14 @@ import { z } from "zod";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { and, desc, eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { user } from "@/lib/db/schema";
 import {
   customerProfile,
   serviceCategory,
   serviceRequest,
   serviceStatusHistory,
-  serviceStatuses,
-  type ServiceStatus,
 } from "@/lib/db/managed-schema";
 
 const requestSchema = z.object({

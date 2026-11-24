@@ -1,6 +1,6 @@
 "use server";
 
-import { and, desc, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";

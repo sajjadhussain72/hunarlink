@@ -12,15 +12,22 @@ import {
 } from "@/app/actions/chat";
 import { VoiceMessagePlayer } from "@/components/voice-message-player";
 import { VoiceMessageRecorder } from "@/components/voice-message-recorder";
+import { Avatar } from "@/components/commen";
 
 type ChatMessage = {
-  id: string;
-  body: string;
-  senderRole: string;
-  messageType?: string;
-  audioPath?: string | null;
-  durationSeconds?: number | null;
-  createdAt: Date | string;
+  message: {
+    id: string;
+    body: string;
+    senderRole: string;
+    messageType?: string;
+    audioPath?: string | null;
+    durationSeconds?: number | null;
+    createdAt: Date | string;
+  };
+  senderName?: string | null;
+  senderEmail?: string | null;
+  senderImage?: string | null;
+  senderRole?: string | null;
 };
 
 export function SupportChat() {
@@ -103,7 +110,7 @@ export function SupportChat() {
           ? {
               ...current,
               messages: current.messages.filter(
-                (message) => message.id !== messageId,
+                (message) => message.message.id !== messageId,
               ),
             }
           : current,
@@ -194,46 +201,59 @@ export function SupportChat() {
         {conversation?.ok &&
           conversation.messages.map((message: ChatMessage) => (
             <div
-              key={message.id}
-              className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm ${message.senderRole === "CUSTOMER" ? "self-end bg-[#153443] text-white" : "self-start border border-[#e3ece7] bg-white text-[#153443]"}`}
+              key={message.message.id}
+              className={`flex flex-col gap-1 ${message.message.senderRole === "CUSTOMER" ? "items-end" : "items-start"}`}
             >
-              {message.messageType === "AUDIO" && message.audioPath ? (
-                <VoiceMessagePlayer
-                  src={`/api/chat/audio/file?pathname=${encodeURIComponent(message.audioPath)}`}
-                  durationSeconds={message.durationSeconds}
-                  compact
-                />
-              ) : (
-                <p>{message.body}</p>
-              )}
-              <div className="mt-1 flex items-center justify-between gap-3">
-                <time className="text-[11px] opacity-60">
-                  {new Date(message.createdAt).toLocaleString()}
-                </time>
-                <details className="relative">
-                  <summary
-                    className="list-none cursor-pointer opacity-60 hover:opacity-100"
-                    aria-label="Message options"
-                  >
-                    •••
-                  </summary>
-                  <div className="absolute bottom-5 right-0 z-10 w-40 rounded-xl border border-[#dbe7e0] bg-white p-1 text-left text-[#153443] shadow-lg">
-                    <button
-                      type="button"
-                      onClick={() => removeMessage(message.id, "ONLY_ME")}
-                      className="block w-full rounded-lg px-3 py-2 text-xs font-bold hover:bg-[#f5f8f6]"
+              <div className="flex items-center gap-2 text-xs text-[#60757b]">
+                <Avatar name={message.senderName || undefined} image={message.senderImage || undefined} size="sm" />
+                <span className="font-semibold">
+                  {message.senderName || (message.message.senderRole === "CUSTOMER" ? "You" : "HunarLink Support")}
+                </span>
+                <span className="rounded-full bg-[#eaf5f0] px-2 py-0.5 text-[10px] font-bold text-[#2f765b]">
+                  {message.message.senderRole}
+                </span>
+              </div>
+              <div
+                className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm ${message.message.senderRole === "CUSTOMER" ? "bg-[#153443] text-white" : "border border-[#e3ece7] bg-white text-[#153443]"}`}
+              >
+                {message.message.messageType === "AUDIO" && message.message.audioPath ? (
+                  <VoiceMessagePlayer
+                    src={`/api/chat/audio/file?pathname=${encodeURIComponent(message.message.audioPath)}`}
+                    durationSeconds={message.message.durationSeconds}
+                    compact
+                  />
+                ) : (
+                  <p>{message.message.body}</p>
+                )}
+                <div className="mt-1 flex items-center justify-between gap-3">
+                  <time className="text-[11px] opacity-60">
+                    {new Date(message.message.createdAt).toLocaleString()}
+                  </time>
+                  <details className="relative">
+                    <summary
+                      className="list-none cursor-pointer opacity-60 hover:opacity-100"
+                      aria-label="Message options"
                     >
-                      Delete for me
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => removeMessage(message.id, "EVERYONE")}
-                      className="block w-full rounded-lg px-3 py-2 text-xs font-bold hover:bg-[#fff1f1] hover:text-[#c84b4b]"
-                    >
-                      Delete for everyone
-                    </button>
-                  </div>
-                </details>
+                      •••
+                    </summary>
+                    <div className="absolute bottom-5 right-0 z-10 w-40 rounded-xl border border-[#dbe7e0] bg-white p-1 text-left text-[#153443] shadow-lg">
+                      <button
+                        type="button"
+                        onClick={() => removeMessage(message.message.id, "ONLY_ME")}
+                        className="block w-full rounded-lg px-3 py-2 text-xs font-bold hover:bg-[#f5f8f6]"
+                      >
+                        Delete for me
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeMessage(message.message.id, "EVERYONE")}
+                        className="block w-full rounded-lg px-3 py-2 text-xs font-bold hover:bg-[#fff1f1] hover:text-[#c84b4b]"
+                      >
+                        Delete for everyone
+                      </button>
+                    </div>
+                  </details>
+                </div>
               </div>
             </div>
           ))}

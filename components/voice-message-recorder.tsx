@@ -1,6 +1,6 @@
 "use client";
 
-import { Mic, RotateCcw, Send, Square, Trash2, Upload } from "lucide-react";
+import { Mic, RotateCcw, Send, Trash2, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const MAX_BYTES = 10 * 1024 * 1024;

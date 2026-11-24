@@ -64,8 +64,15 @@ export async function getSupportConversation() {
       .values({ customerId, subject: "HunarLink Support" })
       .returning();
   const messages = await db
-    .select()
+    .select({
+      message: managedMessage,
+      senderName: user.name,
+      senderEmail: user.email,
+      senderImage: user.image,
+      senderRole: user.role,
+    })
     .from(managedMessage)
+    .leftJoin(user, eq(user.id, managedMessage.senderId))
     .where(
       and(
         eq(managedMessage.conversationId, conversation.id),
@@ -131,7 +138,12 @@ export async function sendSupportMessage(input: z.infer<typeof messageSchema>) {
         eq(managedConversation.customerId, customerId),
       ),
     );
-  return { ok: true as const, message };
+  const [sender] = await db
+    .select({ name: user.name, email: user.email, image: user.image, role: user.role })
+    .from(user)
+    .where(eq(user.id, customerId))
+    .limit(1);
+  return { ok: true as const, message: { message, senderName: sender?.name, senderEmail: sender?.email, senderImage: sender?.image, senderRole: sender?.role } };
 }
 
 export async function getAdminConversations() {
@@ -154,8 +166,15 @@ export async function getAdminConversations() {
     conversations.map(async (item) => ({
       ...item,
       messages: await db
-        .select()
+        .select({
+          message: managedMessage,
+          senderName: user.name,
+          senderEmail: user.email,
+          senderImage: user.image,
+          senderRole: user.role,
+        })
         .from(managedMessage)
+        .leftJoin(user, eq(user.id, managedMessage.senderId))
         .where(
           and(
             eq(managedMessage.conversationId, item.conversation.id),
@@ -211,7 +230,12 @@ export async function sendVoiceMessage(
     .update(managedConversation)
     .set({ updatedAt: new Date() })
     .where(eq(managedConversation.id, conversation.id));
-  return { ok: true as const, message };
+  const [sender] = await db
+    .select({ name: user.name, email: user.email, image: user.image, role: user.role })
+    .from(user)
+    .where(eq(user.id, customerId))
+    .limit(1);
+  return { ok: true as const, message: { message, senderName: sender?.name, senderEmail: sender?.email, senderImage: sender?.image, senderRole: sender?.role } };
 }
 
 export async function sendAdminMessage(input: z.infer<typeof messageSchema>) {
@@ -247,7 +271,12 @@ export async function sendAdminMessage(input: z.infer<typeof messageSchema>) {
     .update(managedConversation)
     .set({ updatedAt: new Date() })
     .where(eq(managedConversation.id, conversation.id));
-  return { ok: true as const, message };
+  const [sender] = await db
+    .select({ name: user.name, email: user.email, image: user.image, role: user.role })
+    .from(user)
+    .where(eq(user.id, staff.id))
+    .limit(1);
+  return { ok: true as const, message: { message, senderName: sender?.name, senderEmail: sender?.email, senderImage: sender?.image, senderRole: sender?.role } };
 }
 
 export async function sendAdminVoiceMessage(
@@ -285,7 +314,12 @@ export async function sendAdminVoiceMessage(
     .update(managedConversation)
     .set({ updatedAt: new Date() })
     .where(eq(managedConversation.id, conversation.id));
-  return { ok: true as const, message };
+  const [sender] = await db
+    .select({ name: user.name, email: user.email, image: user.image, role: user.role })
+    .from(user)
+    .where(eq(user.id, staff.id))
+    .limit(1);
+  return { ok: true as const, message: { message, senderName: sender?.name, senderEmail: sender?.email, senderImage: sender?.image, senderRole: sender?.role } };
 }
 
 export async function deleteChatMessage(
@@ -333,8 +367,8 @@ export async function deleteChatMessage(
     if (message.message.audioPath) {
       try {
         await del(message.message.audioPath);
-      } catch (error) {
-        console.error("[v0] Failed to delete chat audio:", error);
+      } catch {
+        // Audio deletion failed, but continue with message deletion
       }
     }
     await db

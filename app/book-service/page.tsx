@@ -96,7 +96,7 @@ export default function BookServicePage() {
   };
   if (submitted)
     return (
-      <main className="min-h-screen bg-[#f7faf8] px-5 py-16 text-[#153443]">
+      <main className="min-h-screen bg-[#f7faf8] px-5 py-16 text-[#153443]" suppressHydrationWarning>
         <div className="mx-auto max-w-xl rounded-3xl border border-[#dfeae3] bg-white p-8 text-center shadow-sm md:p-12">
           <CheckCircle2 className="mx-auto size-14 text-[#2d8067]" />
           <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-[#d98d2b]">
@@ -121,7 +121,7 @@ export default function BookServicePage() {
     (location) => location.id === form.locationId,
   );
   return (
-    <main className="min-h-screen bg-[#f7faf8] text-[#153443]">
+    <main className="min-h-screen bg-[#f7faf8] text-[#153443]" suppressHydrationWarning>
       <header className="border-b border-[#e1eae5] bg-white">
         <div className="mx-auto flex h-20 max-w-5xl items-center justify-between px-5">
           <Link href="/" className="flex items-center gap-2.5 font-bold">
