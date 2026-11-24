@@ -49,7 +49,7 @@ export default function Hero() {
   return (
 <section className="relative isolate overflow-hidden bg-[#153443] lg:h-[92vh]" suppressHydrationWarning>
   {/* Background image */}
- <div className="absolute inset-0 -z-20 overflow-hidden" aria-hidden="true">
+ <div className="absolute inset-0 -z-20 overflow-hidden" aria-hidden="true" suppressHydrationWarning>
   {backgroundImages.map((image, index) => (
     <div
       key={image}
@@ -76,12 +76,13 @@ export default function Hero() {
   <div
     className="absolute inset-0 -z-0 bg-gradient-to-r from-[#153443]/90 via-[#153443]/75 to-[#153443]/60"
     aria-hidden="true"
+    suppressHydrationWarning
   />
 
-  <div className="relative mx-auto max-w-7xl px-5 py-32 lg:px-8">
+  <div className="relative mx-auto max-w-7xl px-5 py-32 lg:px-8" suppressHydrationWarning>
     {/* Hero content */}
-    <div className="max-w-3xl text-white">
-      <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-[#f9d27a] backdrop-blur-sm">
+    <div className="max-w-3xl text-white" suppressHydrationWarning>
+      <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-[#f9d27a] backdrop-blur-sm" suppressHydrationWarning>
         <Sparkles aria-hidden="true" className="size-4" />
         Professional services, managed by HunarLink
       </div>
@@ -95,8 +96,8 @@ export default function Hero() {
       </p>
 
       {/* Search UI */}
-      <div className="mt-10 rounded-2xl bg-white p-2 shadow-2xl md:p-3">
-        <div className="flex flex-col gap-2 md:flex-row md:gap-3">
+      <div className="mt-10 rounded-2xl bg-white p-2 shadow-2xl md:p-3" suppressHydrationWarning>
+        <div className="flex flex-col gap-2 md:flex-row md:gap-3" suppressHydrationWarning>
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-400" aria-hidden="true" />
             <input
@@ -130,7 +131,7 @@ export default function Hero() {
         </div>
         
         {/* Popular services */}
-        <div className="mt-4 flex flex-wrap gap-2 px-2">
+        <div className="mt-4 flex flex-wrap gap-2 px-2" suppressHydrationWarning>
           <span className="text-xs text-gray-500">Popular:</span>
           {['Electrician', 'Plumber', 'Carpenter', 'Painter', 'Cleaning'].map((service) => (
             <button
@@ -145,7 +146,7 @@ export default function Hero() {
       </div>
 
       {/* Trust badges */}
-      <div className="mt-8 flex flex-wrap gap-6 text-sm text-white/80">
+      <div className="mt-8 flex flex-wrap gap-6 text-sm text-white/80" suppressHydrationWarning>
         <div className="flex items-center gap-2">
           <div className="flex size-8 items-center justify-center rounded-full bg-white/20">
             <Sparkles className="size-4" aria-hidden="true" />
