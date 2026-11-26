@@ -15,4 +15,10 @@ export const auth = betterAuth({
   trustedOrigins,
   emailAndPassword: { enabled: true },
   user: { additionalFields: { phone: { type: 'string', required: false }, role: { type: 'string', required: false, defaultValue: 'CUSTOMER' }, status: { type: 'string', required: false, defaultValue: 'ACTIVE' } } },
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
+  },
 })
