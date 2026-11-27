@@ -1,7 +1,5 @@
 [build]
-  # Use corepack so the pinned pnpm version is available even when pnpm isn't on PATH
-  command = "corepack pnpm install --frozen-lockfile && corepack pnpm run build"
+  # Dependencies are installed automatically by Netlify with `npm ci`
+  # using the committed package-lock.json.
+  command = "npm run build"
   publish = ".next"
-
-[build.environment]
-  COREPACK_ENABLE_DOWNLOAD_PROMPT = "0"
